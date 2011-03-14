@@ -46,7 +46,6 @@ int main(void)
 *   Output   : Returns 0
 *   Function : Init hardware and then loop forever
 ******************************************************************************/
-{	
 {
   	
   disable_global_int();
