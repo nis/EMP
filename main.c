@@ -47,6 +47,7 @@ int main(void)
 *   Function : Init hardware and then loop forever
 ******************************************************************************/
 {	
+{
   	
   disable_global_int();
 	clk_system_init();
