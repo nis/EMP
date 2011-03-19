@@ -41,7 +41,7 @@ INT8U int_to_ascii(INT8U);
 
 INT8U seconds 	= 0;
 INT8U minutes 	= 0;
-INT8U hours		= 11;
+INT8U hours		= 0;
 
 BOOLEAN show_delim = 0;
 
