@@ -13,11 +13,12 @@ void lcd_write_4bit_mode(INT8U c);
 BOOLEAN display_buffer_goto_xy(INT8U col_p, INT8U row_p);
 
 INT8U display_buffer[COL_SIZE][ROW_SIZE];
+INT8U display_buffer_dirty_bits[COL_SIZE][ROW_SIZE];
 INT8U col_pointer = 0;
 INT8U row_pointer = 0;
 
 void init_lcd_write_task(void)
-{
+{	
 	// Start task
 	_start2(LCD_WRITE_TASK, MILLI_SEC(10));
 }
@@ -81,37 +82,42 @@ BOOLEAN display_buffer_goto_xy(INT8U col_p, INT8U row_p)
 
 void lcd_write_task()
 {
-	if (col_pointer >= COL_SIZE)
+	
+	// Find the next dirty bit and write out the char to the LCD.
+	INT8U i = 0;
+	while ( display_buffer_dirty_bits[col_pointer][row_pointer] != 1 && i < COL_SIZE * ROW_SIZE )
 	{
-		// next line
-		col_pointer = 0;
-		row_pointer++;
-
-		if (row_pointer >= ROW_SIZE)
+		if(col_pointer == COL_SIZE - 1)
 		{
-			// Goto start of display.
+			if(row_pointer == ROW_SIZE - 1)
+			{
+				row_pointer = 0;
+			} else {
+				row_pointer++;
+			}
 			col_pointer = 0;
-			row_pointer = 0;
-			display_buffer_goto_xy(col_pointer, row_pointer);
+		} else {
+			col_pointer++;
 		}
-		else
-		{
-			display_buffer_goto_xy(col_pointer,row_pointer);
-		}
+		
+		i++;
 	}
-	else
+	
+	if(display_buffer_dirty_bits[col_pointer][row_pointer])
 	{
-		// Can't write characters to display in same tick period as control commands
-		set_rs_high();			// write characters	
-		lcd_write_4bit_mode(display_buffer[col_pointer][row_pointer]);
-		col_pointer++;
+		lcd_set_cursor_position(row_pointer, col_pointer);
+		set_rs_high();
+		lcd_data_write(display_buffer[col_pointer][row_pointer]);
+		display_buffer_dirty_bits[col_pointer][row_pointer] = 0;
 	}
+	
 	_wait(MILLI_SEC(10));
 }
 
 void lcd_add_char_to_buffer(INT8U col, INT8U row, INT8U ch)
 {
 	display_buffer[col][row] = ch;
+	display_buffer_dirty_bits[col][row] = 1;
 }
 
 void lcd_add_string_to_buffer(INT8U col, INT8U row, INT8U *str)
@@ -119,6 +125,7 @@ void lcd_add_string_to_buffer(INT8U col, INT8U row, INT8U *str)
 	while ( *str )
 	{
 		display_buffer[col][row] = *str;
+		display_buffer_dirty_bits[col][row] = 1;
 		col++;
 		str++;
 	}
@@ -304,8 +311,7 @@ void lcd_write_4bit_mode(INT8U c)
 *   Output   :	-
 *   Function : 	write a character to the LCD in 4 bit mode
 ******************************************************************************/
-{
-
+{	
 	lcd_e_high();
 	GPIO_PORTB_DATA_R = ((c & 0xF0)>> 2) | (GPIO_PORTB_DATA_R & ~(0x3C));
 	lcd_e_low();
