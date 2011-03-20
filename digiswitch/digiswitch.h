@@ -8,6 +8,13 @@
 #ifndef DIGISWITCH_H_
 #define DIGISWITCH_H_
 
+void zero_digiswitch_counter(void);
+/*****************************************************************************
+*   Input    : 	-
+*   Output   : 	-
+*   Function : 	Zeroes the counter.
+******************************************************************************/
+
 INT8S get_digiswitch_counter(void);
 
 /*****************************************************************************

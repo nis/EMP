@@ -43,14 +43,28 @@ INT16U dummy;
 
 /*****************************   Functions   *******************************/
 
+void zero_digiswitch_counter(void)
+/*****************************************************************************
+*   Function : 	Returns the current counter and zeroes it.
+******************************************************************************/
+{
+	digi_switch_counter = 0;
+}
+
 INT8S get_digiswitch_counter(void)
+/*****************************************************************************
+*   Function : 	Returns the current counter and zeroes it.
+******************************************************************************/
 {
 	INT8S return_value = digi_switch_counter;
-	digi_switch_counter = 0;
+	zero_digiswitch_counter();
 	return return_value;
 }
 
 INT8U get_button_count(void)
+/*****************************************************************************
+*   Function : 	Returns the number of times the button was pressed.
+******************************************************************************/
 {
 	INT8U return_value = button_counter;
 	button_counter = 0;
