@@ -111,6 +111,20 @@ void lcd_write_task()
 		display_buffer_dirty_bits[col_pointer][row_pointer] = 0;
 	}
 	
+	
+	if(col_pointer == COL_SIZE - 1)
+	{
+		if(row_pointer == ROW_SIZE - 1)
+		{
+			row_pointer = 0;
+		} else {
+			row_pointer++;
+		}
+		col_pointer = 0;
+	} else {
+		col_pointer++;
+	}
+	
 	_wait(MILLI_SEC(10));
 }
 
