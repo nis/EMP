@@ -26,6 +26,7 @@
 #include "../digiswitch/digiswitch.h"
 #include "../fan/fan.h"
 #include "../lcd/lcd.h"
+#include "../pot/pot.h"
 
 /*****************************    Defines    *******************************/
 
@@ -125,6 +126,11 @@ void controller_task(void)
 			INT8U dig_val = dig_value;
 			fan_speed_up(dig_value);
 		}
+	}
+	
+	if(controller_state == POT_EDIT)
+	{
+		fan_set_speed(get_pot_value());
 	}
 	
 	controller_write_fan_ref_speed();
