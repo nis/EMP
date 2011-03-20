@@ -29,7 +29,7 @@
 
 /*****************************   Variables   *******************************/
 
-INT8U ref_speed = 0; // Speed of the fan. From 0 to 255
+INT8U ref_speed = 0; // Speed of the fan. From 0 to 100
 
 /*****************************   Functions   *******************************/
 
@@ -54,9 +54,9 @@ void fan_speed_up( INT8U ds )
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
-	if( ref_speed > (255 - ds))
+	if( ref_speed > (100 - ds))
 	{
-		ref_speed = 255;
+		ref_speed = 100;
 	} else {
 		ref_speed = ref_speed + ds;
 	}
