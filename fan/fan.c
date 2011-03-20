@@ -22,6 +22,8 @@
 #include "../inc/lm3s6965.h"
 #include "../inc/binary.h"
 #include "../inc/emp_type.h"
+#include "../pwm/pwm.h"
+#include "../rtcs/rtcs.h"
 
 /*****************************    Defines    *******************************/
 
@@ -49,7 +51,24 @@ void fan_task(void)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
+	static old_speed;
 	
+	if(old_speed != ref_speed)
+	{
+		pwm_set_duty_cycle(ref_speed);
+	}
+	
+	old_speed = ref_speed;
+	_wait(MILLI_SEC(10));
+}
+
+void init_fan(void)
+/*****************************************************************************
+*   Function : See h-file for specification.
+*****************************************************************************/
+{
+	// Start task
+	_start2(FAN_TASK, MILLI_SEC(10));
 }
 
 void fan_set_speed( INT8U ds )
