@@ -22,6 +22,8 @@
 #include "../inc/lm3s6965.h"
 #include "../inc/binary.h"
 #include "../inc/emp_type.h"
+#include "../rtcs/rtcs.h"
+#include "../digiswitch/digiswitch.h"
 
 /*****************************    Defines    *******************************/
 
@@ -33,6 +35,8 @@
 
 /*****************************   Variables   *******************************/
 
+INT8U controller_state = DIG_EDIT;
+
 /*****************************   Functions   *******************************/
 
 void controller_change_state(INT8U state_changes)
@@ -42,14 +46,16 @@ void controller_change_state(INT8U state_changes)
 {
 	while (state_changes > 0)
 	{
-		switch ( rtc_state )
+		switch ( controller_state )
 		{
 			case POT_EDIT:
-				rtc_state = DIG_EDIT;
+				lcd_add_string_to_buffer(0, 0, "DIG");
+				controller_state = DIG_EDIT;
 				break;
 
 			case DIG_EDIT:
-				rtc_state = POT_EDIT;
+				lcd_add_string_to_buffer(0, 0, "POT");
+				controller_state = POT_EDIT;
 				break;
 
 			default:
@@ -64,7 +70,11 @@ void controller_task(void)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
-	
+	INT8U state_changes = get_button_count();
+	if(state_changes > 0)
+	{
+		controller_change_state(state_changes);
+	}
 }
 
 
@@ -73,10 +83,8 @@ void init_controller(void)
 *   Function : See module specification (.h-file).
 *****************************************************************************/
 {
-	// Setup the first line of the LCD for clock use:
-	lcd_add_string_to_buffer(0, 0, "DIG");
 	// Start task
-	_start2(CLOCK_TASK, MILLI_SEC(500));
+	_start2(CONTROLLER_TASK, MILLI_SEC(500));
 }
 
 /****************************** End Of Module *******************************/
