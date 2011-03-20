@@ -26,6 +26,7 @@
 #include "rtcscnf.h"
 #include "../rtc/rtc.h"
 #include "../lcd/lcd.h"
+#include "../pot/pot.h"
 /*****************************    Defines    *******************************/
 
 // To be used together with the _wait, _wait_time_sem and _start system call. 

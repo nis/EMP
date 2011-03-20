@@ -39,12 +39,12 @@
 //          automatically and assumed to be of type 'void Task(void)'.
 
 // Task number of LAST task
-#define LAST_TASK					2
+#define LAST_TASK					3
 
 #define TASK0         		alive_task
 #define TASK1         		lcd_write_task
 #define TASK2         		controller_task
-#define TASK3         		NULL
+#define TASK3         		pot_task
 #define TASK4         		NULL
 #define TASK5         		NULL
 #define TASK6         		NULL
@@ -53,7 +53,7 @@
 #define INIT_TASK0   		init_alive_task
 #define INIT_TASK1      	init_lcd_write_task
 #define INIT_TASK2      	init_controller
-#define INIT_TASK3      	NULL
+#define INIT_TASK3      	init_pot
 #define INIT_TASK4      	NULL
 #define INIT_TASK5      	NULL
 #define INIT_TASK6      	NULL
@@ -68,7 +68,7 @@
 #define ALIVE_TASK				0
 #define LCD_WRITE_TASK			1
 #define CONTROLLER_TASK			2
-#define TASK3_NAME				3
+#define POT_TASK				3
 #define TASK4_NAME				4
 #define TASK5_NAME				5
 #define TASK6_NAME				6
