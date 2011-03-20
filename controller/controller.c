@@ -82,6 +82,10 @@ void controller_change_state(INT8U state_changes)
 		{
 			case POT_EDIT:
 				lcd_add_string_to_buffer(0, 0, "DIG");
+				
+				// Zero the counter so we don't get old data
+				zero_digiswitch_counter();
+				
 				controller_state = DIG_EDIT;
 				break;
 
@@ -110,6 +114,8 @@ void controller_task(void)
 	
 	
 	controller_write_fan_ref_speed();
+	
+	
 	
 	_wait(MILLI_SEC(10));
 }
