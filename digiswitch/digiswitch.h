@@ -2,7 +2,7 @@
  * lcd.h
  *
  *  Created on: 23/02/2011
- *      Author: M.Ege
+ *      Author: NS
  */
 
 #ifndef DIGISWITCH_H_
