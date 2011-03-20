@@ -60,7 +60,7 @@ void controller_write_fan_ref_speed(void)
 *****************************************************************************/
 {
 	INT8U new_ref = fan_get_ref_speed();
-	static INT8U old_ref = 0;
+	static INT8U old_ref = 255;
 	
 	if(old_ref != new_ref)
 	{
@@ -112,10 +112,22 @@ void controller_task(void)
 		controller_change_state(state_changes);
 	}
 	
+	if(controller_state == DIG_EDIT)
+	{
+		INT8S dig_value = get_digiswitch_counter();
+		
+		if(dig_value < 0)
+		{
+			INT8U dig_val = -dig_value;
+			fan_speed_down(dig_val);
+		} else if(dig_value > 0)
+		{
+			INT8U dig_val = dig_value;
+			fan_speed_up(dig_value);
+		}
+	}
 	
 	controller_write_fan_ref_speed();
-	
-	
 	
 	_wait(MILLI_SEC(10));
 }
