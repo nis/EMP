@@ -49,14 +49,12 @@ void pot_task(void)
 {
 	if( ADC_RIS_R &&  ADC_RIS_INR3 )
 	{
-		INT16U data = (0x3FF & ADC_SSFIFO3_R) / 10;
-		if(data > 100)
+		pot_value = (0x3FF & ADC_SSFIFO3_R) / 10; // we only want from 0-100
+		if(pot_value > 100) // 1024 / 10 = 102, truncate.
 		{
-			data = 100;
+			pot_value = 100;
 		}
-		pot_value = data;
 		ADC_PSSI_R |=ADC_PSSI_SS3;
-		//pot_value = (data)*12000/1024;
 	}
 	
 	_wait(MILLI_SEC(10));
