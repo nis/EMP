@@ -2,7 +2,7 @@
 * Odense University College of Enginerring
 * Embedded C Programming (EMP)
 *
-* MODULENAME.: systick.c
+* MODULENAME.: fan.c
 *
 * PROJECT....: EMP
 *
