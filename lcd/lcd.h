@@ -19,6 +19,9 @@
 //#define BLINK_ON				0x0D
 //#define DISPLAY_ON			0x0C
 
+void lcd_add_char_to_buffer(INT8U col, INT8U row, INT8U ch);
+void lcd_add_string_to_buffer(INT8U col, INT8U row, INT8U *str);
+
 void init_lcd_write_task(void);
 
 void lcd_write_buffer(void);
