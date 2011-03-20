@@ -67,6 +67,18 @@ void controller_task(void)
 	
 }
 
+
+void init_controller(void)
+/*****************************************************************************
+*   Function : See module specification (.h-file).
+*****************************************************************************/
+{
+	// Setup the first line of the LCD for clock use:
+	lcd_add_string_to_buffer(0, 0, "DIG");
+	// Start task
+	_start2(CLOCK_TASK, MILLI_SEC(500));
+}
+
 /****************************** End Of Module *******************************/
 
 
