@@ -25,11 +25,14 @@
 
 /*****************************    Defines    *******************************/
 
+#define MAX_SPEED  100
+#define MIN_SPEED  0
+
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
 
-INT8U ref_speed = 0; // Speed of the fan. From 0 to 100
+INT8U ref_speed = MIN_SPEED; // Speed of the fan. From 0 to 100
 
 /*****************************   Functions   *******************************/
 
@@ -49,14 +52,25 @@ void fan_task(void)
 	
 }
 
+void fan_set_speed( INT8U ds )
+/*****************************************************************************
+*   Function : See h-file for specification.
+*****************************************************************************/
+{
+	if(ds <= MAX_SPEED && ds >= MIN_SPEED)
+	{
+		ref_speed = ds;
+	}
+}
+
 void fan_speed_up( INT8U ds )
 /*****************************************************************************
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
-	if( ref_speed > (100 - ds))
+	if( ref_speed > (MAX_SPEED - ds))
 	{
-		ref_speed = 100;
+		ref_speed = MAX_SPEED;
 	} else {
 		ref_speed = ref_speed + ds;
 	}
@@ -69,7 +83,7 @@ void fan_speed_down( INT8U ds )
 {
 	if( ref_speed < ds)
 	{
-		ref_speed = 0;
+		ref_speed = MIN_SPEED;
 	} else {
 		ref_speed = ref_speed - ds;
 	}
