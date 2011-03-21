@@ -67,11 +67,34 @@ void controller_write_fan_rpm(void)
 
 	if(old_rpm != new_rpm)
 	{
-		lcd_add_char_to_buffer(0, 1, int_to_ascii((new_rpm / 10000) % 10));
-		lcd_add_char_to_buffer(1, 1, int_to_ascii((new_rpm / 1000) % 10));
-		lcd_add_char_to_buffer(2, 1, int_to_ascii((new_rpm / 100) % 10));
-		lcd_add_char_to_buffer(3, 1, int_to_ascii((new_rpm / 10) % 10));
-		lcd_add_char_to_buffer(4, 1, int_to_ascii(new_rpm % 10));
+		INT8U c1 = int_to_ascii((new_rpm / 10000) % 10);
+		INT8U c2 = int_to_ascii((new_rpm / 1000) % 10);
+		INT8U c3 = int_to_ascii((new_rpm / 100) % 10);
+		INT8U c4 = int_to_ascii((new_rpm / 10) % 10);
+		INT8U c5 = int_to_ascii((new_rpm / 1) % 10);
+		
+		if(c1 == 0x30)
+		{
+			c1 = 0x20;
+			if(c2 == 0x30)
+			{
+				c2 = 0x20;
+				if(c3 == 0x30)
+				{
+					c3 = 0x20;
+					if(c4 == 0x30)
+					{
+						c4 = 0x20;
+					}
+				}
+			}
+		}
+		
+		lcd_add_char_to_buffer(0, 1, c1);
+		lcd_add_char_to_buffer(1, 1, c2);
+		lcd_add_char_to_buffer(2, 1, c3);
+		lcd_add_char_to_buffer(3, 1, c4);
+		lcd_add_char_to_buffer(4, 1, c5);
 	}
 	old_rpm = new_rpm;
 }
@@ -86,10 +109,23 @@ void controller_write_fan_current(void)
 	
 	if(old_current != new_current)
 	{
-		//lcd_add_char_to_buffer(12, 1, int_to_ascii((new_current / 1000) % 10));
-		lcd_add_char_to_buffer(11, 1, int_to_ascii((new_current / 100) % 10));
-		lcd_add_char_to_buffer(12, 1, int_to_ascii((new_current / 10) % 10));
-		lcd_add_char_to_buffer(13, 1, int_to_ascii(new_current % 10));
+		
+		INT8U c1 = int_to_ascii((new_current / 100) % 10);
+		INT8U c2 = int_to_ascii((new_current / 10) % 10);
+		INT8U c3 = int_to_ascii((new_current / 1) % 10);
+		
+		if(c1 == 0x30)
+		{
+			c1 = 0x20;
+			if(c2 == 0x30)
+			{
+				c2 = 0x20;
+			}
+		}
+		
+		lcd_add_char_to_buffer(11, 1, c1);
+		lcd_add_char_to_buffer(12, 1, c2);
+		lcd_add_char_to_buffer(13, 1, c3);
 	}
 	old_current = new_current;
 }
@@ -104,9 +140,23 @@ void controller_write_fan_ref_speed(void)
 	
 	if(old_ref != new_ref)
 	{
-		lcd_add_char_to_buffer(5, 0, int_to_ascii((new_ref / 100) % 10));
-		lcd_add_char_to_buffer(6, 0, int_to_ascii((new_ref / 10) % 10));
-		lcd_add_char_to_buffer(7, 0, int_to_ascii(new_ref % 10));
+		
+		INT8U c1 = int_to_ascii((new_ref / 100) % 10);
+		INT8U c2 = int_to_ascii((new_ref / 10) % 10);
+		INT8U c3 = int_to_ascii((new_ref / 1) % 10);
+		
+		if(c1 == 0x30)
+		{
+			c1 = 0x20;
+			if(c2 == 0x30)
+			{
+				c2 = 0x20;
+			}
+		}
+		
+		lcd_add_char_to_buffer(5, 0, c1);
+		lcd_add_char_to_buffer(6, 0, c2);
+		lcd_add_char_to_buffer(7, 0, c3);
 	}
 	old_ref = new_ref;
 }
@@ -121,7 +171,7 @@ void controller_change_state(INT8U state_changes)
 		switch ( controller_state )
 		{
 			case POT_EDIT:
-				lcd_add_string_to_buffer(0, 0, "DIG");
+				lcd_add_string_to_buffer(13, 0, "DIG");
 				
 				// Zero the counter so we don't get old data
 				zero_digiswitch_counter();
@@ -130,7 +180,7 @@ void controller_change_state(INT8U state_changes)
 				break;
 
 			case DIG_EDIT:
-				lcd_add_string_to_buffer(0, 0, "POT");
+				lcd_add_string_to_buffer(13, 0, "POT");
 				controller_state = POT_EDIT;
 				break;
 
@@ -204,7 +254,8 @@ void init_controller(void)
 *   Function : See module specification (.h-file).
 *****************************************************************************/
 {
-	lcd_add_string_to_buffer(0, 0, "DIG: ");
+	lcd_add_string_to_buffer(0, 0, "Ref: ");
+	lcd_add_string_to_buffer(13, 0, "DIG");
 	lcd_add_string_to_buffer(14, 1, "mA");
 	lcd_add_string_to_buffer(5, 1, "RPM");
 	// Start task
