@@ -34,6 +34,8 @@
 #define POT_EDIT			0 // Use the pot to edit speed
 #define DIG_EDIT			1 // Use the drehimpulsgeber to edit speed
 
+#define CURRENT_UPDATE_DELAY  5 // How many ticks should there be between update of the current
+
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
@@ -53,6 +55,24 @@ INT8U int_to_ascii(INT8U number)
 	} else {
 		return 0x30;
 	}
+}
+
+void controller_write_fan_current(void)
+/*****************************************************************************
+*   Function : Writes out the ref. speed of the fan to the LCD.
+*****************************************************************************/
+{
+	INT16U new_current = fan_get_current();
+	static INT16U old_current = 65534;
+	
+	if(old_current != new_current)
+	{
+		//lcd_add_char_to_buffer(12, 1, int_to_ascii((new_current / 1000) % 10));
+		lcd_add_char_to_buffer(13, 1, int_to_ascii((new_current / 100) % 10));
+		lcd_add_char_to_buffer(14, 1, int_to_ascii((new_current / 10) % 10));
+		lcd_add_char_to_buffer(15, 1, int_to_ascii(new_current % 10));
+	}
+	old_current = new_current;
 }
 
 void controller_write_fan_ref_speed(void)
@@ -113,6 +133,7 @@ void controller_task(void)
 		controller_change_state(state_changes);
 	}
 	
+	// If controlled by the drehimpulsgeber
 	if(controller_state == DIG_EDIT)
 	{
 		INT8S dig_value = get_digiswitch_counter();
@@ -128,14 +149,32 @@ void controller_task(void)
 		}
 	}
 	
+	// If controlled by the pot.
 	if(controller_state == POT_EDIT)
 	{
 		fan_set_speed(get_pot_value());
 	}
 	
-	controller_write_fan_ref_speed();
+	// Write the current
+	static INT8U show_current = CURRENT_UPDATE_DELAY;
+	if(show_current == 0)
+	{
+		show_current = CURRENT_UPDATE_DELAY;
+		controller_write_fan_current();
+	} else {
+		show_current--;
+	}
+	// while (! --show_current)
+	// {
+	// 	show_current = CURRENT_UPDATE_DELAY;
+	// }
 	
-	_wait(MILLI_SEC(10));
+	
+	// Write the ref-speed
+	controller_write_fan_ref_speed();
+
+	
+	_wait(MILLI_SEC(100));
 }
 
 
@@ -145,6 +184,7 @@ void init_controller(void)
 *****************************************************************************/
 {
 	lcd_add_string_to_buffer(0, 0, "DIG: ");
+	lcd_add_string_to_buffer(9, 1, "mA: ");
 	// Start task
 	_start2(CONTROLLER_TASK, MILLI_SEC(10));
 }
