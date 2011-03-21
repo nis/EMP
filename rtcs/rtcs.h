@@ -29,6 +29,7 @@
 #include "../pot/pot.h"
 #include "../pwm/pwm.h"
 #include "../fan/fan.h"
+#include "../alive/alive.h"
 /*****************************    Defines    *******************************/
 
 // To be used together with the _wait, _wait_time_sem and _start system call. 
