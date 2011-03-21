@@ -22,6 +22,7 @@
 #include "../inc/lm3s6965.h"
 #include "../inc/binary.h"
 #include "../inc/emp_type.h"
+#include "../cpu/cpu.h"
 
 /*****************************    Defines    *******************************/
 
@@ -87,7 +88,12 @@ void pwm_task(void)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
+	// Start CPU
+	cpu_busy();
 	
+	
+	// Exit CPU
+	cpu_idle();
 }
 
 /****************************** End Of Module *******************************/

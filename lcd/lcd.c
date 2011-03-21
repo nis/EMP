@@ -4,6 +4,7 @@
 #include "../inc/binary.h"
 #include "lcd.h"
 #include "../rtcs/rtcs.h"
+#include "../cpu/cpu.h"
 
 #define DELAY_NS(x)		(x-20)*(FCPU/1000000000)/3
 #define DELAY_US(x)		(x*(FCPU/1000000))/3
@@ -19,6 +20,14 @@ INT8U row_pointer = 0;
 
 void init_lcd_write_task(void)
 {	
+	// Setup LCD display
+	lcd_port_setup();
+	lcd_init();
+	
+	// Clear the lcd-buffer
+	lcd_add_string_to_buffer(0, 0, "                ");
+	lcd_add_string_to_buffer(0, 1, "                ");
+	
 	// Start task
 	_start2(LCD_WRITE_TASK, MILLI_SEC(10));
 }
@@ -82,6 +91,8 @@ BOOLEAN display_buffer_goto_xy(INT8U col_p, INT8U row_p)
 
 void lcd_write_task()
 {
+	// Start CPU
+	cpu_busy();
 	
 	// Find the next dirty bit and write out the char to the LCD.
 	INT8U i = 0;
@@ -124,6 +135,10 @@ void lcd_write_task()
 	} else {
 		col_pointer++;
 	}
+	
+	
+	// Exit CPU
+	cpu_idle();
 	
 	_wait(MILLI_SEC(10));
 }

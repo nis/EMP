@@ -27,6 +27,7 @@
 #include "../fan/fan.h"
 #include "../lcd/lcd.h"
 #include "../pot/pot.h"
+#include "../cpu/cpu.h"
 
 /*****************************    Defines    *******************************/
 
@@ -196,6 +197,8 @@ void controller_task(void)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
+	// Start CPU
+	cpu_busy();
 	INT8U state_changes = get_button_count();
 	if(state_changes > 0)
 	{
@@ -244,6 +247,9 @@ void controller_task(void)
 
 	// Write the RPM
 	controller_write_fan_rpm();
+	
+	// Exit CPU
+	cpu_idle();
 	
 	_wait(MILLI_SEC(100));
 }

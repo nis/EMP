@@ -24,6 +24,7 @@
 #include "../inc/emp_type.h"
 #include "../pwm/pwm.h"
 #include "../rtcs/rtcs.h"
+#include "../cpu/cpu.h"
 
 /*****************************    Defines    *******************************/
 
@@ -71,6 +72,9 @@ void fan_task(void)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
+	// Start CPU
+	cpu_busy();
+	
 	// Set speed if changed
 	static old_speed;
 	if(old_speed != ref_speed)
@@ -100,6 +104,9 @@ void fan_task(void)
 		rpm_calculation--;
 	}
 	
+	
+	// Exit CPU
+	cpu_idle();
 	
 	_wait(MILLI_SEC(10));
 }

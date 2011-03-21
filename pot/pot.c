@@ -23,6 +23,7 @@
 #include "../inc/binary.h"
 #include "../inc/emp_type.h"
 #include "../rtcs/rtcs.h"
+#include "../cpu/cpu.h"
 
 /*****************************    Defines    *******************************/
 
@@ -47,6 +48,9 @@ void pot_task(void)
 *   Function : See module specification (.h-file).
 *****************************************************************************/
 {
+	// Start CPU
+	cpu_busy();
+
 	if( ADC_RIS_R &&  ADC_RIS_INR3 )
 	{
 		pot_value = (0x3FF & ADC_SSFIFO3_R) / 10; // we only want from 0-100
@@ -56,6 +60,10 @@ void pot_task(void)
 		}
 		ADC_PSSI_R |=ADC_PSSI_SS3;
 	}
+	
+	
+	// Exit CPU
+	cpu_idle();
 	
 	_wait(MILLI_SEC(10));
 }
