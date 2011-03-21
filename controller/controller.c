@@ -57,9 +57,28 @@ INT8U int_to_ascii(INT8U number)
 	}
 }
 
+void controller_write_fan_rpm(void)
+/*****************************************************************************
+*   Function : Writes out fans RPM to the LCD.
+*****************************************************************************/
+{
+	INT16U new_rpm = fan_get_rpm();
+	static INT16U old_rpm = 65534;
+
+	if(old_rpm != new_rpm)
+	{
+		lcd_add_char_to_buffer(0, 1, int_to_ascii((new_rpm / 10000) % 10));
+		lcd_add_char_to_buffer(1, 1, int_to_ascii((new_rpm / 1000) % 10));
+		lcd_add_char_to_buffer(2, 1, int_to_ascii((new_rpm / 100) % 10));
+		lcd_add_char_to_buffer(3, 1, int_to_ascii((new_rpm / 10) % 10));
+		lcd_add_char_to_buffer(4, 1, int_to_ascii(new_rpm % 10));
+	}
+	old_rpm = new_rpm;
+}
+
 void controller_write_fan_current(void)
 /*****************************************************************************
-*   Function : Writes out the ref. speed of the fan to the LCD.
+*   Function : Writes out the current through the fan to the LCD.
 *****************************************************************************/
 {
 	INT16U new_current = fan_get_current();
@@ -173,6 +192,8 @@ void controller_task(void)
 	// Write the ref-speed
 	controller_write_fan_ref_speed();
 
+	// Write the RPM
+	controller_write_fan_rpm();
 	
 	_wait(MILLI_SEC(100));
 }
@@ -185,6 +206,7 @@ void init_controller(void)
 {
 	lcd_add_string_to_buffer(0, 0, "DIG: ");
 	lcd_add_string_to_buffer(14, 1, "mA");
+	lcd_add_string_to_buffer(5, 1, "RPM");
 	// Start task
 	_start2(CONTROLLER_TASK, MILLI_SEC(10));
 }
