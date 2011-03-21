@@ -31,6 +31,36 @@
 /*****************************   Variables   *******************************/
 
 /*****************************   Functions   *******************************/
+
+void cpu_busy()
+/*****************************************************************************
+*   Function : See module specification (.h-file).
+*****************************************************************************/
+{
+	GPIO_PORTD_DATA_R &= ~(1 << 6); // Red LED off.
+}
+
+void cpu_idle()
+/*****************************************************************************
+*   Function : See module specification (.h-file).
+*****************************************************************************/
+{
+	GPIO_PORTD_DATA_R |= 1 << 6; // Red LED on
+}
+
+void cpu_setup_measure_led()
+/*****************************************************************************
+*   Function : See module specification (.h-file).
+*****************************************************************************/
+{
+	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOD; // Enable the port for the red LED
+	INT8U dummy = SYSCTL_RCGC2_R;
+	
+	GPIO_PORTD_DIR_R |= 1 << 6; //Enable red LED
+	
+	GPIO_PORTD_DEN_R |= 1 << 6; // Digital enable
+}
+
 void clk_system_init()
 /*****************************************************************************
 *   Function : See module specification (.h-file).
