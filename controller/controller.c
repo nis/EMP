@@ -68,9 +68,9 @@ void controller_write_fan_current(void)
 	if(old_current != new_current)
 	{
 		//lcd_add_char_to_buffer(12, 1, int_to_ascii((new_current / 1000) % 10));
-		lcd_add_char_to_buffer(13, 1, int_to_ascii((new_current / 100) % 10));
-		lcd_add_char_to_buffer(14, 1, int_to_ascii((new_current / 10) % 10));
-		lcd_add_char_to_buffer(15, 1, int_to_ascii(new_current % 10));
+		lcd_add_char_to_buffer(11, 1, int_to_ascii((new_current / 100) % 10));
+		lcd_add_char_to_buffer(12, 1, int_to_ascii((new_current / 10) % 10));
+		lcd_add_char_to_buffer(13, 1, int_to_ascii(new_current % 10));
 	}
 	old_current = new_current;
 }
@@ -184,7 +184,7 @@ void init_controller(void)
 *****************************************************************************/
 {
 	lcd_add_string_to_buffer(0, 0, "DIG: ");
-	lcd_add_string_to_buffer(9, 1, "mA: ");
+	lcd_add_string_to_buffer(14, 1, "mA");
 	// Start task
 	_start2(CONTROLLER_TASK, MILLI_SEC(10));
 }
