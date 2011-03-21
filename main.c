@@ -50,20 +50,15 @@ int main(void)
   	
   disable_global_int();
 	clk_system_init();
-	lcd_port_setup();
-	lcd_init();
 	
 	init_digiswitch();
 	init_digi_button();
 	
-	// Clear the lcd-buffer
-	lcd_add_string_to_buffer(0, 0, "                ");
-	lcd_add_string_to_buffer(0, 1, "                ");
-	
 	enable_global_int();
-		
-	start_rtcs_scheduler();		// Call scheduler
 	
+	cpu_setup_measure_led();
+	
+	start_rtcs_scheduler();		// Call scheduler
   
 	while(1);
   
