@@ -18,6 +18,11 @@ void init_fan(void);
 *   Function : Initializes the fan. Doesn't do much.
 *****************************************************************************/
 
+INT16U fan_get_current();
+/*****************************************************************************
+*   Function : Returns the current through the fan.
+*****************************************************************************/
+
 INT8U fan_get_ref_speed(void);
 /*****************************************************************************
 *   Function : 	Returns the ref speed of the fan.
