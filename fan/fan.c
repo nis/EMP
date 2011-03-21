@@ -88,7 +88,9 @@ void fan_task(void)
 		INT16U data = (0x3FF & ADC_SSFIFO2_R);
 		ADC_ISC_R |= ADC_ISC_IN2;
 		
-		fan_current = data/3; // Ballpark calculation
+		fan_current = data/4; // Ballpark calculation
+		
+		fan_current = (12*ref_speed/100)*fan_current;
 		
 		ADC_PSSI_R |= ADC_PSSI_SS2; // Enable the ADC for next time
 	}

@@ -111,9 +111,11 @@ void controller_write_fan_current(void)
 	if(old_current != new_current)
 	{
 		
-		INT8U c1 = int_to_ascii((new_current / 100) % 10);
-		INT8U c2 = int_to_ascii((new_current / 10) % 10);
-		INT8U c3 = int_to_ascii((new_current / 1) % 10);
+		INT8U c1 = int_to_ascii((new_current / 10000) % 10);
+		INT8U c2 = int_to_ascii((new_current / 1000) % 10);
+		INT8U c3 = int_to_ascii((new_current / 100) % 10);
+		INT8U c4 = int_to_ascii((new_current / 10) % 10);
+		INT8U c5 = int_to_ascii((new_current / 1) % 10);
 		
 		if(c1 == 0x30)
 		{
@@ -121,12 +123,22 @@ void controller_write_fan_current(void)
 			if(c2 == 0x30)
 			{
 				c2 = 0x20;
+				if(c3 == 0x30)
+				{
+					c3 = 0x20;
+					if(c4 == 0x30)
+					{
+						c4 = 0x20;
+					}
+				}
 			}
 		}
 		
-		lcd_add_char_to_buffer(11, 1, c1);
-		lcd_add_char_to_buffer(12, 1, c2);
-		lcd_add_char_to_buffer(13, 1, c3);
+		lcd_add_char_to_buffer(9, 1, c1);
+		lcd_add_char_to_buffer(10, 1, c2);
+		lcd_add_char_to_buffer(11, 1, c3);
+		lcd_add_char_to_buffer(12, 1, c4);
+		lcd_add_char_to_buffer(13, 1, c5);
 	}
 	old_current = new_current;
 }
@@ -262,7 +274,7 @@ void init_controller(void)
 {
 	lcd_add_string_to_buffer(0, 0, "Ref: ");
 	lcd_add_string_to_buffer(13, 0, "DIG");
-	lcd_add_string_to_buffer(14, 1, "mA");
+	lcd_add_string_to_buffer(14, 1, "mW");
 	lcd_add_string_to_buffer(5, 1, "RPM");
 	// Start task
 	_start2(CONTROLLER_TASK, MILLI_SEC(10));
