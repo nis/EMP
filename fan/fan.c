@@ -29,6 +29,7 @@
 
 #define MAX_SPEED  100
 #define MIN_SPEED  0
+#define RPM_CALCULATION_INTERVAL  50 // How many ticks should there be between calcualtion of the RPM?
 
 /*****************************   Constants   *******************************/
 
@@ -36,8 +37,18 @@
 
 INT8U ref_speed = MIN_SPEED; 	// Speed of the fan. From 0 to 100
 INT16U fan_current = 0;			// Current in the fan in mA
+INT16U fan_rpm = 0;				// Rounds Per Minute for the fan
+INT16U fan_encoder_counter = 0;	// Counter for the interruptroutine
 
 /*****************************   Functions   *******************************/
+
+INT16U fan_get_rpm()
+/*****************************************************************************
+*   Function : See h-file for specification.
+*****************************************************************************/
+{
+	return fan_rpm;
+}
 
 INT16U fan_get_current()
 /*****************************************************************************
@@ -78,7 +89,28 @@ void fan_task(void)
 		ADC_PSSI_R |= ADC_PSSI_SS2; // Enable the ADC for next time
 	}
 	
+	// Calculate RPM
+	static INT8U rpm_calculation = RPM_CALCULATION_INTERVAL;
+	if(rpm_calculation == 0)
+	{
+		fan_rpm = (fan_encoder_counter/2)*(1000/(RPM_CALCULATION_INTERVAL*10))*60; // RPM Calculation
+		fan_encoder_counter = 0;
+		rpm_calculation = RPM_CALCULATION_INTERVAL;
+	} else {
+		rpm_calculation--;
+	}
+	
+	
 	_wait(MILLI_SEC(10));
+}
+
+void portd_isr(void) 
+/*****************************************************************************
+*   Function : 	PORTD interupt routine
+******************************************************************************/
+{
+	fan_encoder_counter++;
+	GPIO_PORTD_ICR_R |= 0b10000000; // Clear interrupts on PORTD
 }
 
 void init_fan(void)
@@ -101,6 +133,39 @@ void init_fan(void)
 	ADC_ACTSS_R |= ADC_ACTSS_ASEN2;
 
 	ADC_PSSI_R |=ADC_PSSI_SS2|ADC_PSSI_SS3;
+	
+	// Setup PORTD
+	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOD; // Enable PORTD
+
+	dummy = SYSCTL_RCGC2_R; // Dummy! Yay!
+ 
+	GPIO_PORTD_DIR_R&= ~(0b10000000); // Direction
+
+	GPIO_PORTD_DEN_R |= 0b10000000; // Digital enable
+
+	GPIO_PORTD_ODR_R &= ~(0b10000000); // No open drain
+
+	GPIO_PORTD_AFSEL_R &= ~(0b10000000); // No alternative function
+	
+	// Init PORTD interrupt for the encoder
+	GPIO_PORTD_IS_R &= ~(0b10000000);
+	
+	GPIO_PORTD_IBE_R &= ~(0b10000000);
+	
+	GPIO_PORTD_IEV_R |= 0b10000000;
+	
+	GPIO_PORTD_ICR_R |= 0b10000000; // Clear interrupts on PORTD
+	
+	// NVIC setup
+	// program NVIC, vector number 19, Interrupt Number = 3
+	// Clear pending interrupt
+	NVIC_UNPEND0_R |= NVIC_UNPEND0_INT3;
+	// Set Priority to 0x10, first clear then set. 
+	NVIC_PRI0_R &= ~(NVIC_PRI0_INT3_M);
+	NVIC_PRI0_R |= (NVIC_PRI0_INT3_M & (0x10<<NVIC_PRI0_INT3_S));
+	NVIC_EN0_R |= NVIC_EN0_INT3;	// enable NVIC interrupt
+	
+	GPIO_PORTD_IM_R |= 0b10000000; // Enable PORTD interrupts
 	
 	// Start task
 	_start2(FAN_TASK, MILLI_SEC(10));
