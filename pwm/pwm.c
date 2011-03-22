@@ -23,6 +23,7 @@
 #include "../inc/binary.h"
 #include "../inc/emp_type.h"
 #include "../cpu/cpu.h"
+#include "../rtcs/rtcs.h"
 
 /*****************************    Defines    *******************************/
 
@@ -32,6 +33,8 @@
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
+
+INT16U pwm_duty_cycle = 0;
 
 /*****************************   Functions   *******************************/
 
@@ -66,6 +69,9 @@ void init_pwm(void)
 	PWM_1_CTL_R |= 0x1; // Start PWM generator 1 timers
 	
 	PWM_ENABLE_R |= 0xC; // Enable outputs
+	
+	// Start task
+	_start2(PWM_TASK, MILLI_SEC(10));
 }
 
 void pwm_set_duty_cycle(INT16U dc)
@@ -73,14 +79,13 @@ void pwm_set_duty_cycle(INT16U dc)
 *   Function : See h-file for specification.
 *****************************************************************************/
 {
-	dc = (12000/100)*dc;
+	pwm_duty_cycle = (12000/100)*dc;
 	
-	if(dc > PWM_LOAD)
+	if(pwm_duty_cycle > PWM_LOAD)
 	{
-		dc = PWM_LOAD - 1;
+		pwm_duty_cycle = PWM_LOAD - 1;
 	}
-	
-	PWM_1_CMPA_R = dc;
+	//PWM_1_CMPA_R = pwm_duty_cycle;
 }
 
 void pwm_task(void)
@@ -91,9 +96,12 @@ void pwm_task(void)
 	// Start CPU
 	cpu_busy();
 	
+	PWM_1_CMPA_R = pwm_duty_cycle;
 	
 	// Exit CPU
 	cpu_idle();
+	
+	_wait(MILLI_SEC(10));
 }
 
 /****************************** End Of Module *******************************/
