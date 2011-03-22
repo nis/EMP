@@ -86,6 +86,7 @@ void fan_task(void)
 	// Read the current
 	if (ADC_RIS_R && ADC_RIS_INR2) {
 		INT16U data = (0x3FF & ADC_SSFIFO2_R);
+		
 		ADC_ISC_R |= ADC_ISC_IN2;
 		
 		fan_current = data/4; // Ballpark calculation
@@ -137,11 +138,11 @@ void init_fan(void)
 
 	ADC_SSMUX2_R |= 4;
 
-	ADC_SSCTL2_R |=  ADC_SSCTL2_IE0 |ADC_SSCTL2_END0;
+	ADC_SSCTL2_R |=  ADC_SSCTL2_IE0 | ADC_SSCTL2_END0;
 	
 	ADC_ACTSS_R |= ADC_ACTSS_ASEN2;
 
-	ADC_PSSI_R |=ADC_PSSI_SS2|ADC_PSSI_SS3;
+	ADC_PSSI_R |= ADC_PSSI_SS2|ADC_PSSI_SS3;
 	
 	// Setup PORTD
 	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOD; // Enable PORTD
